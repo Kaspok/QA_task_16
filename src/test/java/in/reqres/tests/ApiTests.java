@@ -95,4 +95,13 @@ public class ApiTests {
         assertThat(response).isEqualTo("Missing password");
 
     }
+
+    @Test
+    void deleteTest() {
+        given()
+                .when()
+                .delete("/users/2")
+                .then()
+                .statusCode(204);
+    }
 }
