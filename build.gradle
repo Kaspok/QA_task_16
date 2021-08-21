@@ -28,7 +28,9 @@ dependencies {
             "io.qameta.allure:allure-selenide:$allureVersion",
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.assertj:assertj-core:3.19.0",
-            "io.rest-assured:rest-assured:4.3.1")
+            "io.rest-assured:rest-assured:4.3.1",
+            "org.json:json:20210307",
+            "com.fasterxml.jackson.core:jackson-annotations:2.10.3")
 
     testRuntimeOnly(
             "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
