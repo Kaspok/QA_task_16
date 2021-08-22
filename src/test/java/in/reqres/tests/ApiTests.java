@@ -9,7 +9,10 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,10 +23,16 @@ import static org.hamcrest.Matchers.notNullValue;
 public class ApiTests {
 
     Faker faker = new Faker();
+    Date date = new Date();
+    SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
 
     private String name = faker.name().firstName();
     private String job = faker.job().position();
     private String email = faker.internet().emailAddress();
+
+    JSONObject userData = new JSONObject()
+            .put("name", this.name)
+            .put("job", this.job);
 
     @BeforeEach
     void beforeEach() {
@@ -62,13 +71,9 @@ public class ApiTests {
 
     @Test
     void createUserTest() {
-        JSONObject userData = new JSONObject()
-                .put("name", this.name)
-                .put("job", this.job);
-
         given()
                 .contentType(ContentType.JSON)
-                .body(userData.toString())
+                .body(this.userData.toString())
                 .when()
                 .post("/users")
                 .then()
@@ -98,10 +103,30 @@ public class ApiTests {
 
     @Test
     void deleteTest() {
-        given()
+        String response = given()
                 .when()
                 .delete("/users/2")
                 .then()
-                .statusCode(204);
+                .statusCode(204)
+                .extract().response().asString();
+
+        assertThat(response).isEmpty();
+    }
+
+    @Test
+    void updateUserTest() {
+        this.formatDate.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        String response = given()
+                .contentType(ContentType.JSON)
+                .body(this.userData.toString())
+                .when()
+                .put("users/2")
+                .then()
+                .statusCode(200)
+                .extract().response().jsonPath().getString("updatedAt");
+        System.out.println(response);
+
+        assertThat(response).contains(formatDate.format(date));
     }
 }
